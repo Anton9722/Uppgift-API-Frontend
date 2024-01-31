@@ -1,4 +1,6 @@
 let categoryDiv = document.getElementById("categoryDiv");
+categoryDiv.style.gridTemplateColumns = "repeat(2, 1fr)";
+
 //fetchar alla kategorier
 fetch("https://www.themealdb.com/api/json/v1/1/categories.php")
 .then(res => res.json())
@@ -26,7 +28,15 @@ fetch("https://www.themealdb.com/api/json/v1/1/categories.php")
 
         //lägger till en eventlistner till varje div så vi kan klicka och välja rätt kategori
         categorySelector.addEventListener("click", () => {
-            console.log("click på: " + category.strCategory);
+            
+            //fångar vilken kategori användaren klickat på
+            let selectedCategory = category.strCategory;
+
+            //rensar diven när användare klickat på en katogori
+            categoryDiv.innerHTML = ""
+
+            buildCategorySearchResult(categoryDiv, selectedCategory);
+
         })
         //lägger till effekt när man har muspekaren på diven så man ska förstå att det är en knapp
         categorySelector.addEventListener("mouseover", () => {
@@ -42,3 +52,57 @@ fetch("https://www.themealdb.com/api/json/v1/1/categories.php")
 
 
 })
+
+
+//funktion som skriver ut resultat av vald kategori
+function buildCategorySearchResult(parentDiv, category) {
+
+    //skapar lista som vi ska skriva ut resultaten i
+    let resultUl = document.createElement("ul");
+
+    parentDiv.style.gridTemplateColumns = "";
+    
+    //fetchar alla matträtter från vald kategori
+    fetch("https://www.themealdb.com/api/json/v1/1/filter.php?c=" + category)
+    .then(res => res.json())
+    .then(data => {
+        
+        data.meals.map((meal) => {
+            console.log(meal);
+            
+            //fångar id av meal
+            let mealId = meal.idMeal;
+
+            let li = document.createElement("li");
+
+            let searchResultImg = document.createElement("img");
+            searchResultImg.src = meal.strMealThumb;
+            searchResultImg.style.width = "200px";
+
+            let searchResultMealName = document.createElement("h1");
+            searchResultMealName.innerText = meal.strMeal;
+            searchResultMealName.style.marginLeft = "auto";
+            searchResultMealName.style.marginRight = "auto";
+            searchResultMealName.style.marginTop = "auto";
+            searchResultMealName.style.marginBottom = "auto";
+
+            let btn = document.createElement("button");
+            btn.innerText = "Recipe"
+            btn.style.marginLeft = "auto";
+            btn.style.marginRight = "15px";
+            btn.style.marginTop = "auto";
+            btn.style.marginBottom = "auto";
+
+            li.appendChild(searchResultImg);
+            li.appendChild(searchResultMealName);
+            li.appendChild(btn);
+            resultUl.appendChild(li);
+            parentDiv.appendChild(resultUl);
+            
+        })
+
+    })
+
+
+
+}
