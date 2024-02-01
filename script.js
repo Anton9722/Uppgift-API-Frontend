@@ -302,33 +302,81 @@ searchBtn.addEventListener("click", () => {
 
 //knapp för att se alla sparade recept
 savedRecipesBtn.addEventListener("click", () => {
-
-    let imgLink = getMealImgFromId("52767");
-    console.log(imgLink);
-
+    savedRecipesDiv.innerHTML = "";
+    
     savedRecipesDiv.hidden = false;
     searchDiv.hidden = true;
     categoryTitle.hidden = true;
     categoryDiv.innerHTML = "";
-
+    //hämtar alla våra sparade meals
     fetch("http://localhost:8080/meals")
     .then(res => res.json())
     .then(data => {
+        
 
         let ul = document.createElement("ul");
-
+        savedRecipesDiv.appendChild(ul);
+        
+        //loopar igenom och hämtar vad som behövs för varje meal
         data.map((meal) => {
-            console.log(meal);
-            let li = document.createElement("li");
+            fetch("https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + meal.id)
+            .then(res => res.json())
+            .then(data => {
+                let li = document.createElement("li");
+
+                let img = document.createElement("img");
+                img.src = data.meals[0].strMealThumb;
+                img.style.width = "250px"
+
+                let comment = document.createElement("h3");
+                comment.innerText = meal.comment;
+
+                let deleteBtn = document.createElement("button");
+                deleteBtn.innerText = "Delete This Recipe"
+                deleteBtn.style.marginTop = "100px";
+
+                let input = document.createElement("input");
+                input.placeholder = "Enter New Comment Here..."
+                input.style.marginTop = "100px";
+                input.style.height = "50px"
+
+                let editBtn = document.createElement("button");
+                editBtn.innerText = "Edit Comment";
+                editBtn.style.marginTop = "100px";
+
+                editBtn.addEventListener("click", () => {
+                    fetch("http://localhost:8080/meal/" + meal.id + "/" + input.value, {
+                        method: 'PATCH'
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data);
+                    })
+                })
+
+                //ta bort ett sparat recept
+                deleteBtn.addEventListener("click", () => {
+                    fetch("http://localhost:8080/delete?id=" + meal.id, {
+                        method: 'DELETE'
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("Deleted: ", data);
+                    })
+                    alert("Recipe Deleted")
+                })
+                li.appendChild(img);
+                li.appendChild(comment);
+                li.appendChild(deleteBtn);
+                li.appendChild(input);
+                li.appendChild(editBtn);
+                ul.appendChild(li);
+            })
+
         })
     })
-
+    
 })
 
-//funktion som hämtar bilden för ett recept efter specifikt id
-async function getMealImgFromId(mealId) {
-   const res = await fetch("https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + mealId)
-   const data = await res.json()
-   let imgLink = data.meals[0].strMealThumb;
-   return imgLink;
-}
+
+    

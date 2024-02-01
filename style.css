@@ -102,6 +102,9 @@ img {
 
 #savedRecipesDiv{
     background-color: #9EB384;
-    width: 100px;
-    height: 100px;
+}
+
+h3{
+    margin-top: 100px;
+    margin-left: 30px;
 }
