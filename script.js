@@ -238,3 +238,62 @@ function saveRecipe(mealId, comment) {
     
 }
 
+searchBtn.addEventListener("click", () => {
+    
+    if(searchBar.value == "") {
+        alert("The SearchBar Cant Be Empty")
+    }
+    else {
+        
+        fetch("https://www.themealdb.com/api/json/v1/1/search.php?s=" + searchBar.value)
+        .then(res => res.json())
+        .then(data => {
+            if(data.meals != null) {
+                let resultUl = document.createElement("ul");
+                categoryDiv.style.gridTemplateColumns = "";
+                categoryDiv.innerHTML = "";
+                data.meals.map((meal) => {
+                    
+                    let li = document.createElement("li");
+        
+                    let searchResultImg = document.createElement("img");
+                    searchResultImg.src = meal.strMealThumb;
+                    searchResultImg.style.width = "200px";
+        
+                    let searchResultMealName = document.createElement("h1");
+                    searchResultMealName.innerText = meal.strMeal;
+                    searchResultMealName.style.marginLeft = "auto";
+                    searchResultMealName.style.marginRight = "auto";
+                    searchResultMealName.style.marginTop = "auto";
+                    searchResultMealName.style.marginBottom = "auto";
+        
+                    let btn = document.createElement("button");
+                    btn.innerText = "Recipe"
+                    btn.style.marginLeft = "auto";
+                    btn.style.marginRight = "15px";
+                    btn.style.marginTop = "auto";
+                    btn.style.marginBottom = "auto";
+        
+                    li.appendChild(searchResultImg);
+                    li.appendChild(searchResultMealName);
+                    li.appendChild(btn);
+                    resultUl.appendChild(li);
+                    categoryDiv.appendChild(resultUl);
+        
+                    //när användare klickar på knappen så kallar vi på vår funtion som bygger upp recept
+                    btn.addEventListener("click", () => {
+                        //skickar med id så vi vet vilket recept vi ska visa
+                        buildRecipePage(meal.idMeal);
+                    })
+                    
+                })
+
+            } else {
+                alert("No Results For That Search")
+            }
+            
+        })
+
+    }
+
+})
