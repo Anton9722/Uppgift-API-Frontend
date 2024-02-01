@@ -7,10 +7,12 @@ let instructionAndBtnDiv = document.getElementById("instructionAndBtnDiv");
 let savedRecipesBtn = document.getElementById("savedRecipesBtn");
 let searchBar = document.getElementById("searchBar");
 let searchBtn = document.getElementById("searchBtn");
+let savedRecipesDiv = document.getElementById("savedRecipesDiv");
 startPage();
 
 //funktion för att skapa startsidan
 function startPage() {
+    savedRecipesDiv.hidden = true;
     searchDiv.hidden = false;
     categoryTitle.hidden = false;
     titleAndImgDiv.hidden = true;
@@ -297,3 +299,36 @@ searchBtn.addEventListener("click", () => {
     }
 
 })
+
+//knapp för att se alla sparade recept
+savedRecipesBtn.addEventListener("click", () => {
+
+    let imgLink = getMealImgFromId("52767");
+    console.log(imgLink);
+
+    savedRecipesDiv.hidden = false;
+    searchDiv.hidden = true;
+    categoryTitle.hidden = true;
+    categoryDiv.innerHTML = "";
+
+    fetch("http://localhost:8080/meals")
+    .then(res => res.json())
+    .then(data => {
+
+        let ul = document.createElement("ul");
+
+        data.map((meal) => {
+            console.log(meal);
+            let li = document.createElement("li");
+        })
+    })
+
+})
+
+//funktion som hämtar bilden för ett recept efter specifikt id
+async function getMealImgFromId(mealId) {
+   const res = await fetch("https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + mealId)
+   const data = await res.json()
+   let imgLink = data.meals[0].strMealThumb;
+   return imgLink;
+}
