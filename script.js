@@ -132,6 +132,8 @@ function buildRecipePage(mealId) {
     categoryTitle.hidden = true;
     categoryDiv.innerHTML = "";
     titleAndImgDiv.hidden = false;
+    titleAndImgDiv.style.backgroundColor = "#9EB384";
+
 
     fetch("https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + mealId)
     .then(res => res.json())
@@ -302,18 +304,39 @@ searchBtn.addEventListener("click", () => {
 
 //knapp för att se alla sparade recept
 savedRecipesBtn.addEventListener("click", () => {
+    showMySavedRecipesPage();
+})
+
+//visa my saved recipes sidan
+function showMySavedRecipesPage() {
     savedRecipesDiv.innerHTML = "";
+    recipePageDiv.hidden = true;
+    titleAndImgDiv.innerHTML = "";
+    titleAndImgDiv.style.backgroundColor = "#FAF1E4";
+    instructionAndBtnDiv.innerHTML = "";
     
     savedRecipesDiv.hidden = false;
     searchDiv.hidden = true;
     categoryTitle.hidden = true;
     categoryDiv.innerHTML = "";
+
+    let goBackBtn = document.createElement("button");
+    goBackBtn.innerText = "Go Back";
+    goBackBtn.style.position = "absolute";
+    goBackBtn.style.top = "15px";
+    goBackBtn.style.left = "15px";
+    savedRecipesDiv.appendChild(goBackBtn);
+    
+    goBackBtn.addEventListener("click", () => {
+        startPage();
+    })
+
     //hämtar alla våra sparade meals
     fetch("http://localhost:8080/meals")
     .then(res => res.json())
     .then(data => {
         
-
+    
         let ul = document.createElement("ul");
         savedRecipesDiv.appendChild(ul);
         
@@ -323,27 +346,28 @@ savedRecipesBtn.addEventListener("click", () => {
             .then(res => res.json())
             .then(data => {
                 let li = document.createElement("li");
-
+    
                 let img = document.createElement("img");
                 img.src = data.meals[0].strMealThumb;
                 img.style.width = "250px"
-
+    
                 let comment = document.createElement("h3");
                 comment.innerText = meal.comment;
-
+    
                 let deleteBtn = document.createElement("button");
                 deleteBtn.innerText = "Delete This Recipe"
                 deleteBtn.style.marginTop = "100px";
-
+    
                 let input = document.createElement("input");
                 input.placeholder = "Enter New Comment Here..."
                 input.style.marginTop = "100px";
                 input.style.height = "50px"
-
+    
                 let editBtn = document.createElement("button");
                 editBtn.innerText = "Edit Comment";
                 editBtn.style.marginTop = "100px";
-
+    
+                //ändrar en kommentar
                 editBtn.addEventListener("click", () => {
                     fetch("http://localhost:8080/meal/" + meal.id + "/" + input.value, {
                         method: 'PATCH'
@@ -352,8 +376,10 @@ savedRecipesBtn.addEventListener("click", () => {
                     .then(data => {
                         console.log(data);
                     })
+                    alert("Comment Have Been Edited")
+                    showMySavedRecipesPage();
                 })
-
+    
                 //ta bort ett sparat recept
                 deleteBtn.addEventListener("click", () => {
                     fetch("http://localhost:8080/delete?id=" + meal.id, {
@@ -364,6 +390,7 @@ savedRecipesBtn.addEventListener("click", () => {
                         console.log("Deleted: ", data);
                     })
                     alert("Recipe Deleted")
+                    showMySavedRecipesPage();
                 })
                 li.appendChild(img);
                 li.appendChild(comment);
@@ -372,11 +399,10 @@ savedRecipesBtn.addEventListener("click", () => {
                 li.appendChild(editBtn);
                 ul.appendChild(li);
             })
-
+    
         })
     })
-    
-})
 
+}
 
     
